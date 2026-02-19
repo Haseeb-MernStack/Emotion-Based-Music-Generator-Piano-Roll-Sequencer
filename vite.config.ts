@@ -12,4 +12,8 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
+  worker: {
+    // ensure worker bundles use ES modules output (required for code-splitting builds)
+    format: 'es'
+  },
 });

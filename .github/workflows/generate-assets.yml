@@ -1,0 +1,75 @@
+name: Generate assets (GIF/PNG)
+
+on:
+  push:
+    paths:
+      - 'assets/**'
+      - 'scripts/**'
+  workflow_dispatch: {}
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install system packages (ffmpeg, imagemagick)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg imagemagick
+
+      - name: Install node deps
+        run: npm ci
+
+      - name: Generate demo GIF from raw-demo.mp4 (if present)
+        run: |
+          if [ -f assets/raw-demo.mp4 ]; then
+            node scripts/generate-demo.js assets/raw-demo.mp4 assets/demo.gif --fps 12 --scale 600:-1 --duration 6 || exit 1
+            git config --local user.email "actions@github.com"
+            git config --local user.name "github-actions[bot]"
+            git add assets/demo.gif || true
+            git commit -m "chore: generate demo.gif from raw-demo.mp4" || true
+            git push || true
+          else
+            echo "No assets/raw-demo.mp4 found — skipping demo generation"
+          fi
+
+      - name: Convert SVG placeholders to PNG/GIF
+        run: |
+          shopt -s nullglob
+          for f in assets/*; do
+            if grep -q "<svg" "$f" 2>/dev/null; then
+              base=$(basename "$f")
+              name="${base%.*}"
+              ext="${base##*.}"
+              out=assets/${name}.png
+              echo "Converting $f to $out"
+              if command -v magick >/dev/null 2>&1; then
+                magick "$f" "$out"
+              else
+                convert "$f" "$out"
+              fi
+              git add "$out" || true
+            fi
+          done
+          # If there is a demo.svg, also create demo.gif
+          if [ -f assets/demo.svg ]; then
+            if command -v magick >/dev/null 2>&1; then
+              magick assets/demo.svg assets/demo.gif || true
+            else
+              convert assets/demo.svg assets/demo.gif || true
+            fi
+            git add assets/demo.gif || true
+          fi
+          git config --local user.email "actions@github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "chore: generate PNG/GIF assets from SVG placeholders" || true
+          git push || true
