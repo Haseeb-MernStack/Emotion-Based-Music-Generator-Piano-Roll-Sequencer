@@ -4,6 +4,19 @@ Music Composer is a React + TypeScript project using Vite and Tone.js to generat
 
 This repository was audited and improved to fix issues in the composer feature and to add recommended repository files for publishing as an open-source project.
 
+## 🎬 Demo
+
+![App Demo](assets/demo.gif)
+
+## 📸 Screenshots
+
+> Place screenshots in `assets/` folder:
+> ![Home Page](assets/home.png)
+> ![Composer View](assets/composer.png)
+> ![404 - Not Found Page](assets/notfound.png)
+
+---
+
 ## Quick start
 
 Install dependencies:
@@ -142,17 +155,6 @@ Lint (if configured)
 ```bash
 npm run lint
 ```
-
-## 📸 Screenshots
-
-> Place screenshots in `screenshots/` folder:
-> music-composer/
-> └── screenshots/
-> ├── home.png
-> ├── composer.png
-> └── notfound.png
-
----
 
 ## Development tips and notes
 
