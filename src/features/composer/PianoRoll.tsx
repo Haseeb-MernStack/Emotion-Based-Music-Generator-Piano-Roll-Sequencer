@@ -1,10 +1,9 @@
 import { PIANO_RANGE } from "@/engine/theory/pianoRange";
 import { useComposerStore } from "./composer.store";
 import * as Tone from "tone";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export default function PianoRoll() {
-    const [activeNote, setActiveNote] = useState<string | null>(null);
     const { melody, toggleNote } = useComposerStore();
     const reverseRange = [...PIANO_RANGE].reverse();
     const steps = 16;

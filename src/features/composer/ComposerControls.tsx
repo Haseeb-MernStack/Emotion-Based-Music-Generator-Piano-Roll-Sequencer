@@ -1,4 +1,3 @@
-import React from "react";
 import { useComposerStore } from "./composer.store";
 import { generateFromEmotion } from "../../engine/generators/emotion.generator";
 import { playComposition } from "../../lib/audio";
@@ -8,6 +7,8 @@ export default function ComposerControls() {
 
   const handleGenerate = () => {
     const result = generateFromEmotion(key, emotion);
+    // result.melody may be typed as string[], but our store accepts (string|null)[]
+    result.melody = result.melody.map((m:any) => m ?? null);
     setComposition(result as any);
   };
 

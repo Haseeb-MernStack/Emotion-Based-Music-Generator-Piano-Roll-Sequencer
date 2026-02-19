@@ -12,8 +12,8 @@ interface ComposerState {
 
     setEmotion: (emotion:Emotion) => void;
     setComposition: (data: {
-        scale: string[];
-        melody: string[];
+        scale?: string[];
+        melody: (string | null)[];
         chords: string[][];
         tempo: number;
     }) => void;
@@ -45,9 +45,10 @@ export const useComposerStore = create<ComposerState>((set) => ({
 
     setEmotion: (emotion)=> set({emotion}),
 
-    setComposition:(data)=> set({
-        melody: data.melody,
-        chords: data.chords,
-        tempo: data.tempo,
-    }),
+    setComposition: (data) =>
+        set(() => ({
+            melody: data.melody,
+            chords: data.chords,
+            tempo: data.tempo,
+        })),
 }));

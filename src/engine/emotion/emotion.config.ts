@@ -27,6 +27,11 @@ export const EMOTION_CONFIG: Record<Emotion, EmotionConfig> = {
         tempo: 90,
         progrssion: [0, 5, 3, 4],
     },
+    chill: {
+        scale: "major",
+        tempo: 85,
+        progrssion: [0, 2, 4, 5],
+    },
     dark: {
         scale: "minor",
         tempo: 100,

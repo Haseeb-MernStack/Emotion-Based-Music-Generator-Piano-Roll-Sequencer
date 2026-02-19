@@ -10,7 +10,7 @@ async function initAudio() {
 }
 
 export async function playComposition(
-    melody: string[],
+    melody: (string | null)[],
     chords: string[][],
     tempo: number
 ) {
@@ -19,6 +19,7 @@ export async function playComposition(
     Tone.Transport.bpm.value = tempo;
 
     melody.forEach((note, i) => {
+        if (!note) return; // skip empty steps
         synth!.triggerAttackRelease(
             `${note}4`,
             "8n",
