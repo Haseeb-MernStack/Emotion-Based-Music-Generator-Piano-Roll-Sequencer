@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+:root{
+	--app-max-width:1200px;
+}
+
+html,body,#root{height:100%;}
+
+/* general app container to help pages stay centered on large screens */
+.app-container{max-width:var(--app-max-width);margin:0 auto;padding:1rem;width:100%;}
+
+/* ensure tappable elements are comfortably sized on small devices */
+button,input,[role="button"]{touch-action:manipulation}
+
+/* improve font rendering and base color */
+body{@apply bg-gray-50 text-gray-900 antialiased}
