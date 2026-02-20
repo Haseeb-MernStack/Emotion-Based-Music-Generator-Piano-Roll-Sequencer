@@ -12,7 +12,7 @@ export default function PianoRoll() {
 
     const [visibleStart, setVisibleStart] = useState(0);
     const [visibleCount, setVisibleCount] = useState(() => (typeof window !== 'undefined' && window.innerWidth < 640 ? 8 : 16));
-    const touchState = useRef<{ startX?: number; startTouches?: TouchList | null; startCount?: number } | null>(null);
+    const touchState = useRef<{ startX?: number; startTouches?: any | null; startCount?: number } | null>(null);
 
     useEffect(() => {
         synthRef.current = new Tone.PolySynth(Tone.Synth).toDestination();

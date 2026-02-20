@@ -8,7 +8,7 @@ self.addEventListener("message", async (ev) => {
       const emotion = (payload as Record<string, unknown>).emotion as string;
       const result = await generateFromEmotionShared(root, emotion as any);
       // Normalize melody values to allow nulls
-      if (Array.isArray(result.melody)) result.melody = result.melody.map((m: unknown) => (m ?? null) as string | null);
+      if (Array.isArray(result.melody)) result.melody = (result.melody as any).map((m: any) => m ?? null);
       // Post back the composition
       postMessage({ type: "result", result });
     } catch (err) {

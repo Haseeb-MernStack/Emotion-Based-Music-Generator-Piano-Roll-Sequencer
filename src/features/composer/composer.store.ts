@@ -183,6 +183,6 @@ try {
             }, 200);
         });
     }
-} catch (e) {
+} catch {
     // ignore storage errors
 }

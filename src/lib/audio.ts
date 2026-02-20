@@ -1,4 +1,4 @@
-let synth: unknown = null;
+let synth: any = null;
 let Tone: any = null;
 
 async function initAudio() {
