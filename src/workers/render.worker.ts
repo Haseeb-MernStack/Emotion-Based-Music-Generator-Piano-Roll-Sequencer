@@ -10,7 +10,7 @@ self.addEventListener("message", (ev: MessageEvent) => {
       const sampleRate = (pl.sampleRate as number) || 44100;
       const audioBuffer = renderComposition(melody, chords, tempo, sampleRate);
       const wav = encodeWAV(audioBuffer, sampleRate);
-      (postMessage as unknown as typeof postMessage)({ type: "result", buffer: wav }, [wav as ArrayBuffer]);
+      (postMessage as any)({ type: "result", buffer: wav }, [wav as ArrayBuffer]);
     } catch (err) {
       (postMessage as unknown as typeof postMessage)({ type: "error", error: String(err) });
     }

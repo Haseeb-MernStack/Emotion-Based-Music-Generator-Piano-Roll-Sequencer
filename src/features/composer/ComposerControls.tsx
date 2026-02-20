@@ -59,9 +59,9 @@ export default function ComposerControls() {
         }
 
         try {
-            const mod = await import("../../engine/generators/emotion.generator");
-            const result = await mod.generateFromEmotion(key as unknown as string, emotion as unknown as string);
-            result.melody = result.melody.map((m: unknown) => (m ?? null) as string | null);
+            const mod: any = await import("../../engine/generators/emotion.generator");
+            const result: any = await mod.generateFromEmotion(key, emotion);
+            result.melody = (result.melody as any).map((m: any) => m ?? null);
             setComposition(result as any);
             try { addToast({ message: "Generated composition", type: "success" }); } catch (e) { console.warn(e); }
         } catch (err) {
@@ -140,9 +140,9 @@ export default function ComposerControls() {
         for (let i = 0; i < PRESETS.length; i++) {
                 const p = PRESETS[i];
                 try {
-                    const mod = await import("../../engine/generators/emotion.generator");
-                    const comp = await mod.generateFromEmotion(p.key as unknown as string, p.emotion as unknown as string);
-                    comp.melody = comp.melody.map((m: unknown) => (m ?? null) as string | null);
+                    const mod: any = await import("../../engine/generators/emotion.generator");
+                    const comp: any = await mod.generateFromEmotion(p.key, p.emotion);
+                    comp.melody = (comp.melody as any).map((m: any) => m ?? null);
 
                     // Export MIDI
                     const midiMod = await import("../../engine/exporters/midi.exporter");

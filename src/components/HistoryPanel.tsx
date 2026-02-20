@@ -43,7 +43,7 @@ export default function HistoryPanel() {
               <div className="font-medium">{s.key} • {s.emotion}</div>
               <div className="text-gray-500">{s.tempo} BPM • {s.scale}</div>
             </div>
-            <div className="ml-2 flex-shrink-0">
+            <div className="ml-2 shrink-0">
               <button onClick={() => restore(s)} className="px-2 py-1 bg-indigo-600 text-white rounded text-xs">Restore</button>
             </div>
           </div>
