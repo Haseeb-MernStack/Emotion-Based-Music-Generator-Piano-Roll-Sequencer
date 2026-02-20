@@ -61,43 +61,35 @@ Routes are configured in [src/app/router.tsx](src/app/router.tsx) and mounted in
 
 ## Quick start (development)
 
-Prerequisites: Node.js (16+ recommended) and npm or pnpm.
+Prerequisites: Node.js >= 20.19.0 (Node 20 LTS recommended) and npm or pnpm.
 
-Install:
+Run the following to get started locally (copy/paste):
 
 ```bash
+# check node version (must be >= 20.19.0)
+node -v
+
+# install dependencies (use --legacy-peer-deps if you hit peer conflicts on npm)
 npm install
-```
+# or: npm install --legacy-peer-deps
 
-Run dev server (HMR):
-
-```bash
+# start dev server (HMR)
 npm run dev
-```
 
-Build for production:
+# run tests once
+npm test
 
-```bash
+# run linter
+npm run lint
+
+# build production bundle
 npm run build
-```
 
-Preview the production build:
-
-```bash
+# preview built app locally
 npm run preview
 ```
 
-Run unit tests:
-
-```bash
-npm test
-```
-
-Lint (if configured):
-
-```bash
-npm run lint
-```
+If you're using `pnpm` replace `npm` with `pnpm` for the above commands.
 
 ## How to use the app (end-user)
 
@@ -219,24 +211,24 @@ The workflow runs on `push` and can be triggered manually via the Actions tab. I
 ## Deployment (Vercel)
 
 - Live demo: https://your-vercel-deployment.vercel.app (replace with your actual Vercel URL)
+
 - Quick setup on Vercel:
-  - Create a new Vercel project and import this repository from GitHub.
-  - Build command: `npm run build`
-  - Output directory: `dist`
-  - Framework preset: select `Vite` (or leave auto-detected).
-  - Environment: set `NODE_VERSION` or use `engines.node` in `package.json` if you need a specific Node version.
-  - Enable Preview Deployments (Vercel default) for PR preview URLs.
+  1. In Vercel, click "New Project" → Import from GitHub and select this repository.
+  2. Set **Build Command** to `npm run build` and **Output Directory** to `dist`.
+  3. Under Project Settings → General, set **Node.js Version** to `20.x` (or `20.19+`). Vercel will respect `engines.node` in `package.json` but setting it explicitly avoids mismatch.
+  4. Add any required Environment Variables in the Vercel dashboard (never commit secrets to Git).
+  5. Enable Preview Deployments to get per-PR preview URLs.
 
 - Production checklist / recommendations:
-  - CI gates: keep `build`, `lint`, and `test` required on PRs before merging.
-  - Source maps + error reporting: upload source maps to your error-tracking provider (Sentry, Bugsnag) and configure release tracking.
-  - Performance budgets: add bundle-size checks (e.g., `rollup-plugin-visualizer` / `source-map-explorer`) to CI.
-  - Cache policy: serve static assets with far-future immutable caching and hashed filenames; configure `vercel.json` headers if needed.
-  - Security headers: add CSP, HSTS, X-Frame-Options, and other security headers via `vercel.json` or Vercel dashboard.
-  - Environment & secrets: store any API keys, analytics IDs, or third-party secrets in Vercel Environment Variables (never commit them).
-  - Monitoring & observability: enable uptime checks, performance monitoring and error reporting for production traffic.
-  - Asset optimization: use Vercel Image Optimization or pre-optimize large images and animated GIFs (keep `assets/demo.gif` web-friendly size).
-  - Offline support: `public/offline.html` and `sw.js` are included — ensure your service-worker registration and caching strategy are tested in production.
-  - Dependabot/security: enable Dependabot/renovate and run dependency scans regularly.
-  - Releases & changelog: adopt semantic-release or changelog workflow for predictable releases.
-  - Accessibility & testing: run Lighthouse audits and add automated accessibility tests where possible.
+  - CI gates: require `build`, `lint`, and `test` checks on PRs before merging.
+  - Source maps + error reporting: upload source maps to Sentry/Bugsnag and configure release tracking.
+  - Performance budgets: add bundle-size checks (e.g., `rollup-plugin-visualizer` or `source-map-explorer`) in CI.
+  - Cache policy: configure `vercel.json` or Vercel headers to serve hashed assets with long cache TTLs.
+  - Security headers: add CSP, HSTS and other headers via `vercel.json` or Vercel dashboard.
+  - Secrets: put API keys and analytics IDs into Vercel Environment Variables.
+  - Monitoring: enable uptime checks and performance/error monitoring for production.
+  - Assets: use Vercel Image Optimization or pre-optimize large images/GIFs; keep `assets/demo.gif` web-friendly.
+  - Offline support: test your service-worker and `public/offline.html` in production.
+  - Dependency security: enable Dependabot/renovate and run audits regularly.
+  - Releases & changelog: use `semantic-release` or a changelog workflow for releases.
+  - Accessibility: run Lighthouse audits and automate basic accessibility checks.
