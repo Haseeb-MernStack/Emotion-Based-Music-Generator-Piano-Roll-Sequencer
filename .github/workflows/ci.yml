@@ -14,7 +14,8 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          # Vite requires Node 20.19+ (or 22.12+). Use Node 20 LTS to match CI environment.
+          node-version: '20'
       - name: Install dependencies
         run: |
           # Use npm install with legacy-peer-deps to avoid ERESOLVE in CI and lockfile mismatch errors.
