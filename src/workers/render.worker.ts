@@ -1,14 +1,18 @@
 // Simple PCM renderer worker: synthesizes sine waves for melody and chords and returns WAV ArrayBuffer
 self.addEventListener("message", (ev: MessageEvent) => {
-  const { type, payload } = ev.data || {};
+  const { type, payload } = ev.data || {} as Record<string, unknown>;
   if (type === "render") {
     try {
-      const { melody, chords, tempo, sampleRate = 44100 } = payload as any;
-      const audioBuffer = renderComposition(melody as any, chords as any, tempo as number, sampleRate as number);
-      const wav = encodeWAV(audioBuffer, sampleRate as number);
-      (postMessage as any)({ type: "result", buffer: wav }, [wav as ArrayBuffer]);
+      const pl = payload as Record<string, unknown>;
+      const melody = pl.melody as (string | null)[];
+      const chords = pl.chords as string[][];
+      const tempo = pl.tempo as number;
+      const sampleRate = (pl.sampleRate as number) || 44100;
+      const audioBuffer = renderComposition(melody, chords, tempo, sampleRate);
+      const wav = encodeWAV(audioBuffer, sampleRate);
+      (postMessage as unknown as typeof postMessage)({ type: "result", buffer: wav }, [wav as ArrayBuffer]);
     } catch (err) {
-      (postMessage as any)({ type: "error", error: String(err) });
+      (postMessage as unknown as typeof postMessage)({ type: "error", error: String(err) });
     }
   }
 });

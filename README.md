@@ -21,14 +21,16 @@ If images don't appear, ensure they are committed and pushed, use relative paths
 
 ## Features
 
-- Emotion-driven generators that create melodies, chords, rhythm and simple arrangements.
-- Piano-roll editor with note toggling, quantize, swing, velocity/dynamics controls.
-- Offline exporters: MIDI and WAV (workerized renderer), with batch export presets.
-- Lazy-loaded heavy modules (generator code, Tone.js) to reduce initial bundle size.
-- Web Workers for generator and offline rendering to keep the main thread responsive.
-- Undo/redo history persisted to `localStorage` with snapshot trimming.
-- Mobile-first UI improvements: responsive PianoRoll, mobile bottom sheet, pinch-to-zoom and drag-to-scroll gestures.
-- Toast notifications, history panel, and preset management.
+- Emotion-driven generators: dynamic, emotion-based melody and chord generation (uses `src/engine/generators/*`).
+- Piano-roll editor: 16-step grid with note toggling, responsive layout and touch gestures (drag-to-scroll and pinch-to-zoom) implemented in `src/features/composer/PianoRoll.tsx`.
+- Playback: lazy-loaded Tone.js playback via `src/lib/audio.ts` and `playComposition()` with tempo, quantize and swing controls.
+- Exporters: MIDI exporter (`src/engine/exporters/midi.exporter.ts`) and WAV exporter with worker-based renderer and main-thread fallback (`src/engine/exporters/wav.exporter.ts`, `src/workers/render.worker.ts`, `src/engine/exporters/wav.render.fallback.ts`).
+- Batch exports and presets: preset list in `src/engine/presets.ts` and batch export workflow in `src/features/composer/ComposerControls.tsx`.
+- Web Workers: generator worker (`src/workers/generator.worker.ts`) for async generation and a renderer worker for offline WAV rendering.
+- Undo/redo history: snapshot-based history persisted to `localStorage` with trimming to limit size (`src/features/composer/composer.store.ts`).
+- UI helpers: mobile bottom sheet (`src/components/MobileBottomSheet.tsx`), history panel (`src/components/HistoryPanel.tsx`), and toast notifications (`src/components/Toast.tsx`).
+- Tests: example unit tests using Vitest (see `src/engine/generators/emotion.generator.test.ts`).
+- Performance-minded: dynamic imports and workerization are used to keep the initial bundle small and keep heavy work off the main thread.
 
 ## Tech stack & libraries
 
@@ -130,7 +132,7 @@ Batch export presets are provided (see `src/engine/presets.ts`) and can be expor
 2. Clone your fork:
 
 ```bash
-git clone https://github.com/<your-username>/music-composer.git
+git clone https://github.com/Haseeb-MernStack/Emotion-Based-Music-Generator-Piano-Roll-Sequencer.git
 cd music-composer
 npm install
 ```
@@ -213,3 +215,28 @@ This repository includes a GitHub Action that will:
 The workflow runs on `push` and can be triggered manually via the Actions tab. It commits generated assets back to the repository so forks can benefit from generated previews when allowed by branch permissions.
 
 ---
+
+## Deployment (Vercel)
+
+- Live demo: https://your-vercel-deployment.vercel.app (replace with your actual Vercel URL)
+- Quick setup on Vercel:
+  - Create a new Vercel project and import this repository from GitHub.
+  - Build command: `npm run build`
+  - Output directory: `dist`
+  - Framework preset: select `Vite` (or leave auto-detected).
+  - Environment: set `NODE_VERSION` or use `engines.node` in `package.json` if you need a specific Node version.
+  - Enable Preview Deployments (Vercel default) for PR preview URLs.
+
+- Production checklist / recommendations:
+  - CI gates: keep `build`, `lint`, and `test` required on PRs before merging.
+  - Source maps + error reporting: upload source maps to your error-tracking provider (Sentry, Bugsnag) and configure release tracking.
+  - Performance budgets: add bundle-size checks (e.g., `rollup-plugin-visualizer` / `source-map-explorer`) to CI.
+  - Cache policy: serve static assets with far-future immutable caching and hashed filenames; configure `vercel.json` headers if needed.
+  - Security headers: add CSP, HSTS, X-Frame-Options, and other security headers via `vercel.json` or Vercel dashboard.
+  - Environment & secrets: store any API keys, analytics IDs, or third-party secrets in Vercel Environment Variables (never commit them).
+  - Monitoring & observability: enable uptime checks, performance monitoring and error reporting for production traffic.
+  - Asset optimization: use Vercel Image Optimization or pre-optimize large images and animated GIFs (keep `assets/demo.gif` web-friendly size).
+  - Offline support: `public/offline.html` and `sw.js` are included — ensure your service-worker registration and caching strategy are tested in production.
+  - Dependabot/security: enable Dependabot/renovate and run dependency scans regularly.
+  - Releases & changelog: adopt semantic-release or changelog workflow for predictable releases.
+  - Accessibility & testing: run Lighthouse audits and add automated accessibility tests where possible.

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useComposerStore } from "./composer.store";
 import { playComposition } from "../../lib/audio";
 import { PRESETS } from "../../engine/presets";
-import { useToast } from "../../components/Toast";
+import { useToast } from "../../components/toast.context";
 import MobileBottomSheet from "../../components/MobileBottomSheet";
 
 export default function ComposerControls() {
@@ -31,15 +31,15 @@ export default function ComposerControls() {
             // @ts-ignore
             workerRef.current = new Worker(new URL("../../workers/generator.worker.ts", import.meta.url), { type: "module" });
             workerRef.current.onmessage = (ev: MessageEvent) => {
-                const { type, result, error } = ev.data || {};
-                if (type === "result") {
-                    setComposition(result as any);
-                    try { addToast({ message: "Generated composition", type: "success" }); } catch { }
-                } else if (type === "error") {
-                    console.error("Generator worker error:", error);
-                    try { addToast({ message: "Generation failed", type: "error" }); } catch { }
-                }
-            };
+                    const { type, result, error } = ev.data || {} as Record<string, unknown>;
+                    if (type === "result") {
+                        setComposition(result as any);
+                        try { addToast({ message: "Generated composition", type: "success" }); } catch (e) { console.warn(e); }
+                    } else if (type === "error") {
+                        console.error("Generator worker error:", error);
+                        try { addToast({ message: "Generation failed", type: "error" }); } catch (e) { console.warn(e); }
+                    }
+                };
         } catch (err) {
             console.warn("Worker creation failed, will fall back to dynamic import", err);
         }
@@ -60,13 +60,13 @@ export default function ComposerControls() {
 
         try {
             const mod = await import("../../engine/generators/emotion.generator");
-            const result = await mod.generateFromEmotion(key as any, emotion as any);
-            result.melody = result.melody.map((m: any) => m ?? null);
+            const result = await mod.generateFromEmotion(key as unknown as string, emotion as unknown as string);
+            result.melody = result.melody.map((m: unknown) => (m ?? null) as string | null);
             setComposition(result as any);
-            try { addToast({ message: "Generated composition", type: "success" }); } catch { }
+            try { addToast({ message: "Generated composition", type: "success" }); } catch (e) { console.warn(e); }
         } catch (err) {
             console.error("Failed to load generator:", err);
-            try { addToast({ message: "Generation failed", type: "error" }); } catch { }
+            try { addToast({ message: "Generation failed", type: "error" }); } catch (e) { console.warn(e); }
         }
     };
 
@@ -101,10 +101,10 @@ export default function ComposerControls() {
             a.download = "composition.mid";
             a.click();
             URL.revokeObjectURL(url);
-            try { addToast({ message: "MIDI exported", type: "success" }); } catch { }
+            try { addToast({ message: "MIDI exported", type: "success" }); } catch (e) { console.warn(e); }
         } catch (err) {
             console.error("MIDI export failed:", err);
-            try { addToast({ message: "MIDI export failed", type: "error" }); } catch { }
+            try { addToast({ message: "MIDI export failed", type: "error" }); } catch (e) { console.warn(e); }
         }
     };
 
@@ -118,10 +118,10 @@ export default function ComposerControls() {
             a.download = "composition.wav";
             a.click();
             URL.revokeObjectURL(url);
-            try { addToast({ message: "WAV exported", type: "success" }); } catch { }
+            try { addToast({ message: "WAV exported", type: "success" }); } catch (e) { console.warn(e); }
         } catch (err) {
             console.error("WAV export failed:", err);
-            try { addToast({ message: "WAV export failed", type: "error" }); } catch { }
+            try { addToast({ message: "WAV export failed", type: "error" }); } catch (e) { console.warn(e); }
         }
     };
 
@@ -129,44 +129,44 @@ export default function ComposerControls() {
     const [batchRunning, setBatchRunning] = useState(false);
     const [batchProgress, setBatchProgress] = useState(0);
 
-    const applyPreset = (p: any) => {
+    const applyPreset = (p: (typeof PRESETS)[number]) => {
         useComposerStore.setState({ key: p.key, tempo: p.tempo });
-        setEmotion(p.emotion as any);
+        setEmotion(p.emotion as unknown as any);
     };
 
     const handleBatchExport = async () => {
         setBatchRunning(true);
         setBatchProgress(0);
         for (let i = 0; i < PRESETS.length; i++) {
-            const p = PRESETS[i];
-            try {
-                const mod = await import("../../engine/generators/emotion.generator");
-                const comp = await mod.generateFromEmotion(p.key as any, p.emotion as any);
-                comp.melody = comp.melody.map((m: any) => m ?? null);
+                const p = PRESETS[i];
+                try {
+                    const mod = await import("../../engine/generators/emotion.generator");
+                    const comp = await mod.generateFromEmotion(p.key as unknown as string, p.emotion as unknown as string);
+                    comp.melody = comp.melody.map((m: unknown) => (m ?? null) as string | null);
 
-                // Export MIDI
-                const midiMod = await import("../../engine/exporters/midi.exporter");
-                const midiBlob = midiMod.exportToMidi(comp.melody, comp.chords, p.tempo);
-                const midiUrl = URL.createObjectURL(midiBlob);
-                const a1 = document.createElement("a");
-                a1.href = midiUrl;
-                a1.download = `${p.name.replace(/\s+/g, "_")}.mid`;
-                a1.click();
-                URL.revokeObjectURL(midiUrl);
+                    // Export MIDI
+                    const midiMod = await import("../../engine/exporters/midi.exporter");
+                    const midiBlob = midiMod.exportToMidi(comp.melody, comp.chords, p.tempo);
+                    const midiUrl = URL.createObjectURL(midiBlob);
+                    const a1 = document.createElement("a");
+                    a1.href = midiUrl;
+                    a1.download = `${p.name.replace(/\s+/g, "_")}.mid`;
+                    a1.click();
+                    URL.revokeObjectURL(midiUrl);
 
-                // Export WAV
-                const wavMod = await import("../../engine/exporters/wav.exporter");
-                const wavBlob = await wavMod.renderToWav(comp.melody, comp.chords, p.tempo);
-                const wavUrl = URL.createObjectURL(wavBlob);
-                const a2 = document.createElement("a");
-                a2.href = wavUrl;
-                a2.download = `${p.name.replace(/\s+/g, "_")}.wav`;
-                a2.click();
-                URL.revokeObjectURL(wavUrl);
-            } catch (err) {
-                console.error("Batch export failed for preset", p.name, err);
-                try { addToast({ message: `Batch export failed: ${p.name}`, type: "error" }); } catch { }
-            }
+                    // Export WAV
+                    const wavMod = await import("../../engine/exporters/wav.exporter");
+                    const wavBlob = await wavMod.renderToWav(comp.melody, comp.chords, p.tempo);
+                    const wavUrl = URL.createObjectURL(wavBlob);
+                    const a2 = document.createElement("a");
+                    a2.href = wavUrl;
+                    a2.download = `${p.name.replace(/\s+/g, "_")}.wav`;
+                    a2.click();
+                    URL.revokeObjectURL(wavUrl);
+                } catch (err) {
+                    console.error("Batch export failed for preset", p.name, err);
+                    try { addToast({ message: `Batch export failed: ${p.name}`, type: "error" }); } catch (e) { console.warn(e); }
+                }
             setBatchProgress(Math.round(((i + 1) / PRESETS.length) * 100));
             // small delay to keep UI responsive
             await new Promise((r) => setTimeout(r, 150));

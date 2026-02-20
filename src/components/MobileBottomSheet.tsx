@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
-export default function MobileBottomSheet({ open, onClose, children }: { open: boolean; onClose: () => void; children: any }) {
+export default function MobileBottomSheet({ open, onClose, children }: { open: boolean; onClose: () => void; children: React.ReactNode }) {
   useEffect(() => {
     if (typeof document === "undefined") return;
     if (open) document.body.style.overflow = "hidden";

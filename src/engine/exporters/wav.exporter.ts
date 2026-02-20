@@ -1,7 +1,7 @@
 export async function renderToWav(melody: (string | null)[], chords: string[][], tempo: number) {
   // Try worker-based rendering if supported
   try {
-    // @ts-ignore
+    // @ts-expect-error - worker import via new URL (vite)
     const worker = new Worker(new URL("../../workers/render.worker.ts", import.meta.url), { type: "module" });
     return await new Promise<Blob>((resolve, reject) => {
       worker.onmessage = (ev: MessageEvent) => {

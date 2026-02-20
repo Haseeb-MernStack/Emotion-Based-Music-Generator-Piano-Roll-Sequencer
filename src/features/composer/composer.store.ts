@@ -43,11 +43,11 @@ interface ComposerState {
 
 const snapshotOf = (s: Partial<ComposerState>): Snapshot => ({
     key: s.key || "C",
-    emotion: (s as any).emotion || ("happy" as Emotion),
+    emotion: (s.emotion as Emotion) || ("happy" as Emotion),
     chords: s.chords || [],
     melody: s.melody || Array(16).fill(null),
     tempo: s.tempo || 120,
-    scale: s.scale || "major",
+    scale: (s.scale as unknown as string) || "major",
 });
 
 export const useComposerStore = create<ComposerState>((set, get) => ({
@@ -74,7 +74,7 @@ export const useComposerStore = create<ComposerState>((set, get) => ({
 
     undo: () => {
         set((s) => {
-            if (!s.past.length) return {} as any;
+            if (!s.past.length) return {} as Partial<ComposerState> as ComposerState;
             const last = s.past[s.past.length - 1];
             const before = s.past.slice(0, -1);
             const currentSnap = snapshotOf(s);
@@ -82,20 +82,20 @@ export const useComposerStore = create<ComposerState>((set, get) => ({
                 ...last,
                 past: before,
                 future: [currentSnap, ...s.future],
-            } as any;
+            } as unknown as ComposerState;
         });
     },
 
     redo: () => {
         set((s) => {
-            if (!s.future.length) return {} as any;
+            if (!s.future.length) return {} as Partial<ComposerState> as ComposerState;
             const [next, ...rest] = s.future;
             const currentSnap = snapshotOf(s);
             return {
                 ...next,
                 past: [...s.past, currentSnap],
                 future: rest,
-            } as any;
+            } as unknown as ComposerState;
         });
     },
 
@@ -112,7 +112,7 @@ export const useComposerStore = create<ComposerState>((set, get) => ({
                 newMelody[step] = note;
             }
 
-            return { melody: newMelody, past: state.past, future: [] } as any;
+            return { melody: newMelody, past: state.past, future: [] } as unknown as ComposerState;
         }),
 
     setEmotion: (emotion) => set({ emotion }),
@@ -127,7 +127,7 @@ export const useComposerStore = create<ComposerState>((set, get) => ({
                 tempo: data.tempo,
                 past,
                 future: [],
-            } as any;
+            } as unknown as ComposerState;
         }),
 
     setQuantize: (q) => set({ quantize: q }),

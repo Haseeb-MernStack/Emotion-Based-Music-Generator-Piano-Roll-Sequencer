@@ -1,5 +1,5 @@
 export function noteToFreq(noteWithOctave: string) {
-  const names: any = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+  const names: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
   const m = noteWithOctave.match(/^([A-Ga-g])([#b]?)(\d)$/);
   if (!m) return 440;
   const [, l, accidental, octS] = m;

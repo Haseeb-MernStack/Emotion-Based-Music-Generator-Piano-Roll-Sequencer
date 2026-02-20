@@ -1,22 +1,30 @@
 import { useMemo } from "react";
 import { useComposerStore } from "../features/composer/composer.store";
 
+type SnapshotView = {
+  key: string;
+  emotion: string;
+  melody: (string | null)[];
+  chords: string[][];
+  tempo: number;
+  scale?: string;
+};
+
 export default function HistoryPanel() {
   const { past, undo, redo } = useComposerStore();
 
   const items = useMemo(() => {
-    return (past || []).slice().reverse().slice(0, 20);
+    return (past || []).slice().reverse().slice(0, 20) as SnapshotView[];
   }, [past]);
 
-  const restore = (snap: any) => {
-    // restore main fields
+  const restore = (snap: SnapshotView) => {
     useComposerStore.setState({
       key: snap.key,
-      emotion: snap.emotion,
+      emotion: snap.emotion as any,
       melody: snap.melody,
       chords: snap.chords,
       tempo: snap.tempo,
-      scale: snap.scale,
+      scale: (snap.scale as any) || undefined,
     } as any);
   };
 
@@ -29,7 +37,7 @@ export default function HistoryPanel() {
       </div>
       <div className="h-64 overflow-auto space-y-2">
         {items.length === 0 && <div className="text-xs text-gray-500">No history yet</div>}
-        {items.map((s: any, i: number) => (
+        {items.map((s, i) => (
           <div key={i} className="p-2 border rounded flex items-center justify-between">
             <div className="text-xs">
               <div className="font-medium">{s.key} • {s.emotion}</div>
