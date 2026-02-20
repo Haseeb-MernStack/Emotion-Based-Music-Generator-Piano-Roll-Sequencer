@@ -210,7 +210,7 @@ The workflow runs on `push` and can be triggered manually via the Actions tab. I
 
 ## Deployment (Vercel)
 
-- Live demo: https://your-vercel-deployment.vercel.app (replace with your actual Vercel URL)
+- Live demo: https://music-composer-xi.vercel.app/
 
 - Quick setup on Vercel:
   1. In Vercel, click "New Project" → Import from GitHub and select this repository.
