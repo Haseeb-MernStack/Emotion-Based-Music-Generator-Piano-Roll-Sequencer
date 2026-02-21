@@ -1,0 +1,100 @@
+name: "✨ Feature Request"
+description: "Suggest a new feature or improvement for the Music Composer App"
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage", "help wanted", "good first issue", "feature request", "priority: low", "priority: medium", "priority: high", "needs design feedback", "needs code review", "needs documentation", "needs discussion", "needs decision", "needs investigation", "needs triage", "duplicate", "wontfix", "invalid", "question", "bug report", "performance", "UI", "UX", "audio engine", "midi export", "wav export", "batch export", "composer controls", "piano roll", "layout", "other"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🎵 Music Composer App — Feature Request
+        
+        Thank you for helping improve the Music Composer App!
+        
+        🔎 Before submitting, please search existing issues:
+        https://github.com/Haseeb-MernStack/Emotion-Based-Music-Generator-Piano-Roll-Sequencer/issues
+        
+        Clear, structured feature requests help maintain quality and faster implementation.
+
+  - type: textarea
+    id: problem_statement
+    attributes:
+      label: "🧩 Problem Statement"
+      description: |
+        Describe the problem this feature would solve.
+        What limitation or friction currently exists?
+      placeholder: |
+        Example:
+        Currently, users cannot export MIDI files.
+        This limits interoperability with external DAWs.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: "🚀 Proposed Solution"
+      description: |
+        Describe your ideal solution.
+        Be specific about how it should behave in the Music Composer App.
+      placeholder: |
+        Example:
+        Add a 'Export as MIDI' button in the composer toolbar.
+        The system should generate a downloadable .mid file from the piano roll sequence.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternative_solutions
+    attributes:
+      label: "🔄 Alternative Solutions"
+      description: |
+        Describe any alternative approaches or features you considered.
+      placeholder: |
+        Example:
+        Instead of direct export, integrate with an external music API.
+    validations:
+      required: false
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: "🎯 Use Case / User Impact"
+      description: |
+        Who benefits from this feature?
+        How does it improve user experience?
+      placeholder: |
+        Example:
+        Producers can export their compositions into professional DAWs like Ableton or FL Studio.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: feature_area
+    attributes:
+      label: "📦 Feature Area"
+      description: "Which area of the Music Composer App does this affect?"
+      options:
+        - Piano Roll Sequencer
+        - Emotion Detection Engine
+        - AI Music Generation
+        - UI / UX
+        - Audio Playback Engine
+        - Export / Import
+        - Performance Optimization
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: "📎 Additional Context"
+      description: |
+        Add mockups, screenshots, diagrams, references, or links here.
+      placeholder: |
+        You can paste screenshots, UI sketches, or GitHub links here.
+    validations:
+      required: false
