@@ -1,6 +1,6 @@
 export default function Header() {
   return (
-    <header className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 rounded-md mb-6">
+    <header className="w-full bg-linear-to-r from-purple-600 to-indigo-600 text-white p-4 rounded-md mb-6">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-extrabold">MuseForge</h1>
