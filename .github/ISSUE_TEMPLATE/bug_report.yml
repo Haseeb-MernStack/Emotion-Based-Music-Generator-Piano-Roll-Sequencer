@@ -1,0 +1,109 @@
+name: "🐛 Bug Report"
+description: "Report a bug to help improve the Music Composer App"
+title: "[BUG] "
+labels: ["bug", "needs-triage", "help wanted", "good first issue", "bug report", "triaged", "priority: high", "priority: medium", "priority: low", "needs reproduction", "needs more info", "needs testing", "needs design feedback", "needs code review", "needs documentation", "needs discussion", "needs decision", "needs investigation", "needs triage", "duplicate", "wontfix", "invalid", "question", "enhancement", "feature request", "performance", "UI", "UX", "audio engine", "midi export", "wav export", "batch export", "composer controls", "piano roll", "layout", "other", "help wanted", "good first issue"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🎵 Music Composer App — Bug Report
+
+        Thank you for taking the time to report a bug.
+
+        🔍 Please search existing issues before submitting:
+        https://github.com/Haseeb-MernStack/Emotion-Based-Music-Generator-Piano-Roll-Sequencer/issues
+
+        Make sure this issue has not already been reported.
+
+  - type: input
+    id: environment
+    attributes:
+      label: "🖥 Environment"
+      description: "Provide details about your environment."
+      placeholder: "Example: Windows 11, Chrome 121, Desktop / MacOS Safari / Mobile Chrome"
+    validations:
+      required: true
+
+  - type: textarea
+    id: bug_description
+    attributes:
+      label: "🐞 Describe the Bug"
+      description: "Clearly describe what the bug is."
+      placeholder: |
+        What happened?
+        What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: "📋 Steps to Reproduce"
+      description: "Provide clear steps so we can reproduce the issue."
+      placeholder: |
+        1. Go to Composer page
+        2. Select Emotion = Happy
+        3. Click Generate
+        4. Observe the issue...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: "✅ Expected Behavior"
+      description: "What should have happened instead?"
+      placeholder: "The melody should generate without layout collapsing."
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: "📸 Screenshots or Screen Recording"
+      description: "If applicable, add screenshots or a screen recording."
+      placeholder: "Drag and drop images here or paste links."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: feature_area
+    attributes:
+      label: "🎛 Affected Area"
+      description: "Which part of the Music Composer App is affected?"
+      options:
+        - Composer Controls
+        - Piano Roll
+        - MIDI Export
+        - WAV Export
+        - Batch Export
+        - UI / Layout
+        - Performance
+        - Audio Engine
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: console_logs
+    attributes:
+      label: "🧾 Console Errors (if any)"
+      description: "Paste any browser console errors."
+      placeholder: "Paste console errors here..."
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ### 🚀 Contribution
+
+        If you would like to fix this issue yourself, feel free to open a Pull Request.
+
+        Repository:
+        https://github.com/Haseeb-MernStack/Emotion-Based-Music-Generator-Piano-Roll-Sequencer
+
+        Thank you for helping improve the Music Composer App 🎵
