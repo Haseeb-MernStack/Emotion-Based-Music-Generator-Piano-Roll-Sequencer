@@ -5,6 +5,10 @@ import { PRESETS } from "../../engine/presets";
 import { useToast } from "../../components/toast.context";
 import MobileBottomSheet from "../../components/MobileBottomSheet";
 
+const inputClass = "px-3 py-2 bg-white/5 backdrop-blur border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition";
+
+const buttonClass = "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50";
+
 export default function ComposerControls() {
     const {
         key,
@@ -25,21 +29,22 @@ export default function ComposerControls() {
     const workerRef = useRef<Worker | null>(null);
     const { addToast } = useToast();
     const [sheetOpen, setSheetOpen] = useState(false);
+    const [localLoading, setLocalLoading] = useState(false);
 
     useEffect(() => {
         try {
             // @ts-ignore
             workerRef.current = new Worker(new URL("../../workers/generator.worker.ts", import.meta.url), { type: "module" });
             workerRef.current.onmessage = (ev: MessageEvent) => {
-                    const { type, result, error } = ev.data || {} as Record<string, unknown>;
-                    if (type === "result") {
-                        setComposition(result as any);
-                        try { addToast({ message: "Generated composition", type: "success" }); } catch (e) { console.warn(e); }
-                    } else if (type === "error") {
-                        console.error("Generator worker error:", error);
-                        try { addToast({ message: "Generation failed", type: "error" }); } catch (e) { console.warn(e); }
-                    }
-                };
+                const { type, result, error } = ev.data || {} as Record<string, unknown>;
+                if (type === "result") {
+                    setComposition(result as any);
+                    try { addToast({ message: "Generated composition", type: "success" }); } catch (e) { console.warn(e); }
+                } else if (type === "error") {
+                    console.error("Generator worker error:", error);
+                    try { addToast({ message: "Generation failed", type: "error" }); } catch (e) { console.warn(e); }
+                }
+            };
         } catch (err) {
             console.warn("Worker creation failed, will fall back to dynamic import", err);
         }
@@ -138,35 +143,35 @@ export default function ComposerControls() {
         setBatchRunning(true);
         setBatchProgress(0);
         for (let i = 0; i < PRESETS.length; i++) {
-                const p = PRESETS[i];
-                try {
-                    const mod: any = await import("../../engine/generators/emotion.generator");
-                    const comp: any = await mod.generateFromEmotion(p.key, p.emotion);
-                    comp.melody = (comp.melody as any).map((m: any) => m ?? null);
+            const p = PRESETS[i];
+            try {
+                const mod: any = await import("../../engine/generators/emotion.generator");
+                const comp: any = await mod.generateFromEmotion(p.key, p.emotion);
+                comp.melody = (comp.melody as any).map((m: any) => m ?? null);
 
-                    // Export MIDI
-                    const midiMod = await import("../../engine/exporters/midi.exporter");
-                    const midiBlob = midiMod.exportToMidi(comp.melody, comp.chords, p.tempo);
-                    const midiUrl = URL.createObjectURL(midiBlob);
-                    const a1 = document.createElement("a");
-                    a1.href = midiUrl;
-                    a1.download = `${p.name.replace(/\s+/g, "_")}.mid`;
-                    a1.click();
-                    URL.revokeObjectURL(midiUrl);
+                // Export MIDI
+                const midiMod = await import("../../engine/exporters/midi.exporter");
+                const midiBlob = midiMod.exportToMidi(comp.melody, comp.chords, p.tempo);
+                const midiUrl = URL.createObjectURL(midiBlob);
+                const a1 = document.createElement("a");
+                a1.href = midiUrl;
+                a1.download = `${p.name.replace(/\s+/g, "_")}.mid`;
+                a1.click();
+                URL.revokeObjectURL(midiUrl);
 
-                    // Export WAV
-                    const wavMod = await import("../../engine/exporters/wav.exporter");
-                    const wavBlob = await wavMod.renderToWav(comp.melody, comp.chords, p.tempo);
-                    const wavUrl = URL.createObjectURL(wavBlob);
-                    const a2 = document.createElement("a");
-                    a2.href = wavUrl;
-                    a2.download = `${p.name.replace(/\s+/g, "_")}.wav`;
-                    a2.click();
-                    URL.revokeObjectURL(wavUrl);
-                } catch (err) {
-                    console.error("Batch export failed for preset", p.name, err);
-                    try { addToast({ message: `Batch export failed: ${p.name}`, type: "error" }); } catch (e) { console.warn(e); }
-                }
+                // Export WAV
+                const wavMod = await import("../../engine/exporters/wav.exporter");
+                const wavBlob = await wavMod.renderToWav(comp.melody, comp.chords, p.tempo);
+                const wavUrl = URL.createObjectURL(wavBlob);
+                const a2 = document.createElement("a");
+                a2.href = wavUrl;
+                a2.download = `${p.name.replace(/\s+/g, "_")}.wav`;
+                a2.click();
+                URL.revokeObjectURL(wavUrl);
+            } catch (err) {
+                console.error("Batch export failed for preset", p.name, err);
+                try { addToast({ message: `Batch export failed: ${p.name}`, type: "error" }); } catch (e) { console.warn(e); }
+            }
             setBatchProgress(Math.round(((i + 1) / PRESETS.length) * 100));
             // small delay to keep UI responsive
             await new Promise((r) => setTimeout(r, 150));
@@ -175,100 +180,107 @@ export default function ComposerControls() {
         try { addToast({ message: "Batch export complete", type: "success" }); } catch { }
     };
 
+    // Derived UI state
+    const hasNotes = !!(melody && (melody as any).some((m: any) => m != null)) || (chords && chords.length > 0);
+
     return (
         <>
-            <div className="p-4 bg-white rounded shadow-md flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-3 sm:space-y-0">
-                <div className="flex items-center space-x-2">
-                    <label className="text-sm font-medium">Emotion</label>
-                    <select value={emotion} onChange={(e) => setEmotion(e.target.value as any)} className="px-3 py-2 border rounded">
-                        <option value="happy">Happy</option>
-                        <option value="sad">Sad</option>
-                        <option value="epic">Epic</option>
-                        <option value="chill">Chill</option>
-                        <option value="dark">Dark</option>
-                    </select>
+            <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 bg-linear-to-r from-white/5 to-white/10 rounded-2xl backdrop-blur-xl border border-white/10 shadow-2xl flex flex-col xl:flex-row gap-8">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 items-start md:gap-8">
+
+                    <div className="min-w-0 flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-6 w-full">
+                        <div className="flex items-center gap-3">
+                            <label className="text-sm font-medium">Emotion</label>
+                            <select value={emotion} onChange={(e) => setEmotion(e.target.value as any)} className='px-3 py-2 bg-white/5 backdrop-blur border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition w-full sm:w-40'>
+                                <option value="happy">Happy</option>
+                                <option value="sad">Sad</option>
+                                <option value="epic">Epic</option>
+                                <option value="chill">Chill</option>
+                                <option value="dark">Dark</option>
+                            </select>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <label className="text-sm font-medium">Presets</label>
+                            <select
+                                value={""}
+                                onChange={(e) => {
+                                    const name = e.target.value;
+                                    const p = PRESETS.find((x) => x.name === name);
+                                    if (p) applyPreset(p);
+                                }}
+                                className={`${inputClass} w-full sm:w-40`}
+                            >
+                                <option value="">Select preset...</option>
+                                {PRESETS.map((p) => (
+                                    <option key={p.name} value={p.name} className="px-3 py-2 bg-white/5 backdrop-blur border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition">
+                                        {p.name} — {p.emotion} — {p.tempo}BPM
+                                    </option>
+                                ))}
+                            </select>
+                            <button onClick={handleBatchExport} disabled={batchRunning}
+                                className={`shrink-0 ${buttonClass} bg-indigo-600 hover:bg-indigo-700 text-white`}>
+                                {batchRunning ? `Exporting ${batchProgress}%` : "Batch Export"}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="min-w-0 flex items-center gap-3 md:mt-20 lg:mt-16 w-full">
+                        <label className="text-sm font-medium min-w-[72px]">Tempo</label>
+                        <input
+                            className="flex-1 w-full max-w-full"
+                            type="range"
+                            min={60}
+                            max={200}
+                            value={tempo}
+                            onChange={(e) => {
+                                const val = Number(e.target.value);
+                                useComposerStore.setState({ tempo: val });
+                            }}
+                        />
+                        <span className="ml-2 text-sm min-w-[64px] text-right">{tempo} BPM</span>
+                    </div>
+
+                    <div className="min-w-0 flex items-start md:-mt-14.5 lg:-mt-22 sm:items-center gap-3">
+                        <label className="text-sm font-medium">Quantize</label>
+                        <select value={quantize} onChange={(e) => setQuantize(e.target.value as any)} className={`px-3 py-2 bg-white/5 backdrop-blur border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition w-full sm:w-32`}>
+                            <option value="1/4">1/4</option>
+                            <option value="1/8">1/8</option>
+                            <option value="1/16">1/16</option>
+                        </select>
+
+                        <div className="items-center hidden md:flex gap-2 w-full sm:w-auto">
+                            <label className="text-sm font-medium">Swing</label>
+                            <input className="w-full sm:w-36" type="range" min={0} max={50} value={swing} onChange={(e) => setSwing(Number(e.target.value))} />
+                            <span className="w-12 text-right text-sm">{swing}%</span>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div className="flex items-center space-x-2">
-                    <label className="text-sm font-medium">Presets</label>
-                    <select
-                        value={""}
-                        onChange={(e) => {
-                            const name = e.target.value;
-                            const p = PRESETS.find((x) => x.name === name);
-                            if (p) applyPreset(p);
-                        }}
-                        className="px-3 py-2 border rounded"
-                    >
-                        <option value="">Select preset...</option>
-                        {PRESETS.map((p) => (
-                            <option key={p.name} value={p.name}>
-                                {p.name} — {p.emotion} — {p.tempo}BPM
-                            </option>
-                        ))}
-                    </select>
-                    <button onClick={handleBatchExport} disabled={batchRunning} className="px-3 py-2 bg-emerald-600 text-white rounded">
-                        {batchRunning ? `Exporting... ${batchProgress}%` : "Batch Export Presets"}
+                <div className="flex flex-wrap items-center gap-3 xl:ml-auto lg:mt-40 w-full xl:w-auto">
+                    <button onClick={async () => { setLocalLoading(true); await handleGenerate(); setLocalLoading(false); }}
+                        className={`shrink-0 ${buttonClass} bg-indigo-600 hover:bg-indigo-700 text-white`}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v20M2 12h20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        {localLoading ? 'Generating...' : 'Generate'}
                     </button>
-                </div>
 
-                <div className="flex items-center space-x-2">
-                    <label className="text-sm font-medium">Tempo</label>
-                    <input
-                        className="w-36"
-                        type="range"
-                        min={60}
-                        max={200}
-                        value={tempo}
-                        onChange={(e) => {
-                            const val = Number(e.target.value);
-                            useComposerStore.setState({ tempo: val });
-                        }}
-                    />
-                    <span className="w-12 text-right">{tempo} BPM</span>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                    <label className="text-sm font-medium">Quantize</label>
-                    <select value={quantize} onChange={(e) => setQuantize(e.target.value as any)} className="px-3 py-2 border rounded">
-                        <option value="1/4">1/4</option>
-                        <option value="1/8">1/8</option>
-                        <option value="1/16">1/16</option>
-                    </select>
-
-                    <label className="text-sm font-medium">Swing</label>
-                    <input className="w-32" type="range" min={0} max={50} value={swing} onChange={(e) => setSwing(Number(e.target.value))} />
-                    <span className="w-12 text-right">{swing}%</span>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2 ml-auto">
-                    <button onClick={handleGenerate} className="px-3 sm:px-4 py-2 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded shadow text-sm">
-                        Generate
-                    </button>
-                    <button onClick={handlePlay} className="px-3 sm:px-4 py-2 bg-green-600 text-white rounded text-sm">
+                    <button onClick={handlePlay} disabled={!hasNotes}
+                        className={`shrink-0 ${buttonClass} bg-indigo-600 hover:bg-indigo-700 text-white`}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 3v18l15-9-15-9z" fill="currentColor" /></svg>
                         Play
                     </button>
-                    <button onClick={undo} className="px-2 py-1 bg-gray-300 rounded text-sm">
-                        Undo
-                    </button>
-                    <button onClick={redo} className="px-2 py-1 bg-gray-300 rounded text-sm">
-                        Redo
-                    </button>
-                    <button onClick={handleClear} className="px-3 sm:px-4 py-2 bg-gray-200 rounded text-sm">
-                        Clear
-                    </button>
-                    <button onClick={handleSave} className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded text-sm">
-                        Save
-                    </button>
-                    <button onClick={handleExportMidi} className="px-3 sm:px-4 py-2 bg-yellow-600 text-white rounded text-sm">
-                        Export MIDI
-                    </button>
-                    <button onClick={handleExportWav} className="px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded text-sm">
-                        Export WAV
-                    </button>
-                    <button onClick={() => setSheetOpen(true)} className="sm:hidden px-3 py-2 bg-gray-100 rounded text-sm">
-                        Advanced
-                    </button>
+                    <button onClick={undo} className={`shrink-0 ${buttonClass} bg-indigo-600 hover:bg-indigo-700 text-white`}>Undo</button>
+                    <button onClick={redo} className={`shrink-0 ${buttonClass} bg-indigo-600 hover:bg-indigo-700 text-white`}>Redo</button>
+
+                    <button onClick={handleClear} disabled={!hasNotes} className={`shrink-0 ${buttonClass} bg-gray-700 hover:bg-gray-600 disabled:opacity-50`}>Clear</button>
+
+                    <button onClick={handleSave} disabled={!hasNotes} className={`shrink-0 ${buttonClass} bg-blue-600 hover:bg-blue-700 disabled:opacity-50`}>Save</button>
+
+                    <button onClick={handleExportMidi} disabled={!hasNotes} className={`shrink-0 ${buttonClass} bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50`}>Export MIDI</button>
+                    <button onClick={handleExportWav} disabled={!hasNotes} className={`shrink-0 ${buttonClass} bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50`}>Export WAV</button>
+
+                    <button onClick={() => setSheetOpen(true)} className={`shrink-0 ${buttonClass} bg-indigo-600 hover:bg-indigo-700 text-white`}>Advanced</button>
                 </div>
             </div>
 
@@ -278,7 +290,7 @@ export default function ComposerControls() {
                         <div>
                             <label className="text-sm font-medium">Quantize</label>
                             <div>
-                                <select value={quantize} onChange={(e) => setQuantize(e.target.value as any)} className="px-3 py-2 border rounded w-full">
+                                <select value={quantize} onChange={(e) => setQuantize(e.target.value as any)} className={`${inputClass} w-full sm:w-40`}>
                                     <option value="1/4">1/4</option>
                                     <option value="1/8">1/8</option>
                                     <option value="1/16">1/16</option>
@@ -293,8 +305,8 @@ export default function ComposerControls() {
                     </div>
 
                     <div className="flex gap-2">
-                        <button onClick={handleExportMidi} className="flex-1 px-3 py-2 bg-yellow-500 text-white rounded">Export MIDI</button>
-                        <button onClick={handleExportWav} className="flex-1 px-3 py-2 bg-indigo-600 text-white rounded">Export WAV</button>
+                        <button onClick={handleExportMidi} className={`shrink-0 ${buttonClass} bg-indigo-600 hover:bg-indigo-700 text-white`}>Export MIDI</button>
+                        <button onClick={handleExportWav} className={`shrink-0 ${buttonClass} bg-indigo-600 hover:bg-indigo-700 text-white`}>Export WAV</button>
                     </div>
                 </div>
             </MobileBottomSheet>
