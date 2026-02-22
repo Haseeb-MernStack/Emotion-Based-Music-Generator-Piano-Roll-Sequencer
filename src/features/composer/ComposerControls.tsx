@@ -191,12 +191,15 @@ export default function ComposerControls() {
                     <div className="min-w-0 flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-6 w-full">
                         <div className="flex items-center gap-3">
                             <label className="text-sm font-medium">Emotion</label>
-                            <select value={emotion} onChange={(e) => setEmotion(e.target.value as any)} className='px-3 py-2 bg-white/5 backdrop-blur border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition w-full sm:w-40'>
-                                <option value="happy">Happy</option>
-                                <option value="sad">Sad</option>
-                                <option value="epic">Epic</option>
-                                <option value="chill">Chill</option>
-                                <option value="dark">Dark</option>
+                            <select
+                                value={emotion}
+                                onChange={(e) => setEmotion(e.target.value as any)}
+                                className='px-3 py-2 text-white border border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition w-full sm:w-40'>
+                                <option className="bg-gray-800 text-white" value="happy">Happy</option>
+                                <option className="bg-gray-800 text-white" value="sad">Sad</option>
+                                <option className="bg-gray-800 text-white" value="epic">Epic</option>
+                                <option className="bg-gray-800 text-white" value="chill">Chill</option>
+                                <option className="bg-gray-800 text-white" value="dark">Dark</option>
                             </select>
                         </div>
 
@@ -209,11 +212,11 @@ export default function ComposerControls() {
                                     const p = PRESETS.find((x) => x.name === name);
                                     if (p) applyPreset(p);
                                 }}
-                                className={`${inputClass} w-full sm:w-40`}
+                                className="px-3 py-2 text-white border border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition w-full sm:w-40"
                             >
-                                <option value="">Select preset...</option>
+                                <option className="bg-gray-800 text-white" value="">Select preset...</option>
                                 {PRESETS.map((p) => (
-                                    <option key={p.name} value={p.name} className="px-3 py-2 bg-white/5 backdrop-blur border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition">
+                                    <option key={p.name} value={p.name} className="bg-gray-800 text-white">
                                         {p.name} — {p.emotion} — {p.tempo}BPM
                                     </option>
                                 ))}
@@ -243,10 +246,14 @@ export default function ComposerControls() {
 
                     <div className="min-w-0 flex items-start md:-mt-14.5 lg:-mt-22 sm:items-center gap-3">
                         <label className="text-sm font-medium">Quantize</label>
-                        <select value={quantize} onChange={(e) => setQuantize(e.target.value as any)} className={`px-3 py-2 bg-white/5 backdrop-blur border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition w-full sm:w-32`}>
-                            <option value="1/4">1/4</option>
-                            <option value="1/8">1/8</option>
-                            <option value="1/16">1/16</option>
+                        <select
+                            value={quantize}
+                            onChange={(e) =>
+                                setQuantize(e.target.value as any)}
+                            className="px-3 py-2 text-white border border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition w-full sm:w-40">
+                            <option className="bg-gray-800 text-white" value="1/4">1/4</option>
+                            <option className="bg-gray-800 text-white" value="1/8">1/8</option>
+                            <option className="bg-gray-800 text-white" value="1/16">1/16</option>
                         </select>
 
                         <div className="items-center hidden md:flex gap-2 w-full sm:w-auto">
@@ -287,13 +294,16 @@ export default function ComposerControls() {
             <MobileBottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)}>
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                        <div>
+                        <div className="flex items-center">
                             <label className="text-sm font-medium">Quantize</label>
                             <div>
-                                <select value={quantize} onChange={(e) => setQuantize(e.target.value as any)} className={`${inputClass} w-full sm:w-40`}>
-                                    <option value="1/4">1/4</option>
-                                    <option value="1/8">1/8</option>
-                                    <option value="1/16">1/16</option>
+                                <select
+                                    value={quantize}
+                                    onChange={(e) => setQuantize(e.target.value as any)}
+                                    className={`${inputClass} w-full`}>
+                                    <option className="bg-gray-800 text-white" value="1/4">1/4</option>
+                                    <option className="bg-gray-800 text-white" value="1/8">1/8</option>
+                                    <option className="bg-gray-800 text-white" value="1/16">1/16</option>
                                 </select>
                             </div>
                         </div>
