@@ -25,8 +25,8 @@ export default function ComposerPage() {
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="hidden sm:flex items-center gap-3">
-                                    <div className="px-3 py-1 rounded-full backdrop-blur-xl text-sm text-slate-300">Premium Theme</div>
-                                    <div className="px-3 py-1 rounded-full bg-emerald-600 text-sm font-medium">Battle Winner</div>
+                                    <div className="px-3 py-1 rounded-full backdrop-blur-xl text-sm text-slate-300">Music</div>
+                                    <div className="px-3 py-1 rounded-full bg-emerald-600 text-sm font-medium">Composer</div>
                                 </div>
                             </div>
                         </div>
