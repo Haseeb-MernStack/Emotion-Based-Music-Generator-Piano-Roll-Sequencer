@@ -1,7 +1,14 @@
 name: "✨ Feature Request"
 description: "Suggest a new feature or improvement for the Music Composer App"
 title: "[Feature]: "
-labels: ["enhancement", "needs-triage", "help wanted", "good first issue", "feature request", "priority: low", "priority: medium", "priority: high", "needs design feedback", "needs code review", "needs documentation", "needs discussion", "needs decision", "needs investigation", "needs triage", "duplicate", "wontfix", "invalid", "question", "bug report", "performance", "UI", "UX", "audio engine", "midi export", "wav export", "batch export", "composer controls", "piano roll", "layout", "other"]
+labels:
+  [
+    "enhancement",
+    "needs-triage",
+    "help wanted",
+    "good first issue",
+    "feature request",
+  ]
 assignees: []
 
 body:
@@ -9,12 +16,12 @@ body:
     attributes:
       value: |
         ## 🎵 Music Composer App — Feature Request
-        
+
         Thank you for helping improve the Music Composer App!
-        
+
         🔎 Before submitting, please search existing issues:
         https://github.com/Haseeb-MernStack/Emotion-Based-Music-Generator-Piano-Roll-Sequencer/issues
-        
+
         Clear, structured feature requests help maintain quality and faster implementation.
 
   - type: textarea
