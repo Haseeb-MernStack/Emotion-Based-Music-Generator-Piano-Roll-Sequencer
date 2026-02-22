@@ -1,7 +1,15 @@
 name: "🐛 Bug Report"
 description: "Report a bug to help improve the Music Composer App"
 title: "[BUG] "
-labels: ["bug", "needs-triage", "help wanted", "good first issue", "bug report", "triaged", "priority: high", "priority: medium", "priority: low", "needs reproduction", "needs more info", "needs testing", "needs design feedback", "needs code review", "needs documentation", "needs discussion", "needs decision", "needs investigation", "needs triage", "duplicate", "wontfix", "invalid", "question", "enhancement", "feature request", "performance", "UI", "UX", "audio engine", "midi export", "wav export", "batch export", "composer controls", "piano roll", "layout", "other", "help wanted", "good first issue"]
+labels:
+  [
+    "bug",
+    "needs-triage",
+    "help wanted",
+    "good first issue",
+    "bug report",
+    "triaged",
+  ]
 assignees: []
 
 body:
